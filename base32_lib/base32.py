@@ -2,8 +2,8 @@
 #
 # This file is part of base32-lib
 # Copyright (C) 2019 CERN.
-# Copyright (C) 2019 Northwestern University,
-#                    Galter Health Sciences Library & Learning Center.
+# Copyright (C) 2019 Northwestern University.
+# Copyright (C) 2025 Front Matter.
 
 # base32-lib is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
@@ -12,7 +12,7 @@
 
 This encoder/decoder:
 - uses Douglas Crockford Base32 encoding: https://www.crockford.com/base32.html
-- allows for ISO 7064 checksum
+- allows for ISO 7064 MOD 97-10 checksum
 - encodes the checksum using only characters in the base32 set
   (only digits in fact)
 - produces string that are URI-friendly (no '=' or '/' for instance)
@@ -23,12 +23,9 @@ This is based on:
 """
 
 import random
-import string
-
-import six
 
 # NO i, l, o or u
-ENCODING_CHARS = '0123456789abcdefghjkmnpqrstvwxyz'
+ENCODING_CHARS = "0123456789abcdefghjkmnpqrstvwxyz"
 DECODING_CHARS = {c: i for i, c in enumerate(ENCODING_CHARS)}
 
 
@@ -42,7 +39,7 @@ def encode(number, split_every=0, min_length=0, checksum=False):
     :returns: A random Douglas Crockford base32 encoded string composed only
               of valid URI characters.
     """
-    assert isinstance(number, six.integer_types)
+    assert isinstance(number, int)
 
     if number < 0:
         raise ValueError("Invalid 'number'. Must be >= 0.")
@@ -50,20 +47,21 @@ def encode(number, split_every=0, min_length=0, checksum=False):
     if split_every < 0:
         raise ValueError("Invalid 'split_every'. Must be >= 0.")
 
-    encoded = ''
     original_number = number
+
     if number == 0:
-        encoded = '0'
+        encoded = "0"
     else:
+        encoded = ""
         while number > 0:
             remainder = number % 32
             number //= 32  # quotient of integer division
             encoded = ENCODING_CHARS[remainder] + encoded
 
     if checksum:
-        # NOTE: 100 * original_number is used because datacite also uses it
+        # NOTE: compute checksum according to ISO 7064 MOD 97-10
         computed_checksum = 97 - ((100 * original_number) % 97) + 1
-        encoded_checksum = "{:02d}".format(computed_checksum)
+        encoded_checksum = f"{computed_checksum:02d}"
         encoded += encoded_checksum
 
     if min_length > 0:
@@ -72,10 +70,9 @@ def encode(number, split_every=0, min_length=0, checksum=False):
 
     if split_every > 0:
         splits = [
-            encoded[i:i+split_every]
-            for i in range(0, len(encoded), split_every)
+            encoded[i : i + split_every] for i in range(0, len(encoded), split_every)
         ]
-        encoded = '-'.join(splits)
+        encoded = "-".join(splits)
 
     return encoded
 
@@ -89,9 +86,7 @@ def generate(length=8, split_every=0, checksum=False):
     :returns: identifier as a string
     """
     if checksum and length < 3:
-        raise ValueError(
-            "Invalid 'length'. Must be >= 3 if checksum enabled."
-        )
+        raise ValueError("Invalid 'length'. Must be >= 3 if checksum enabled.")
 
     generator = random.SystemRandom()
     length_no_checksum = length - 2 if checksum else length
@@ -101,7 +96,7 @@ def generate(length=8, split_every=0, checksum=False):
         number,
         split_every=split_every,
         min_length=length,  # ensures desired length (*including* checksum)
-        checksum=checksum
+        checksum=checksum,
     )
 
 
@@ -116,11 +111,8 @@ def normalize(encoded):
     :param encoded: string to decode
     :returns: normalized string.
     """
-    table = (
-        ''.maketrans('IiLlOo', '111100') if six.PY3 else
-        string.maketrans('IiLlOo', '111100')
-    )
-    encoded = encoded.replace('-', '').translate(table).lower()
+    table = "".maketrans("IiLlOo", "111100")
+    encoded = encoded.replace("-", "").translate(table).lower()
 
     if not all([c in ENCODING_CHARS for c in encoded]):
         raise ValueError("'encoded' contains undecodable characters.")

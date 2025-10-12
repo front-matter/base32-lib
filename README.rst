@@ -1,8 +1,7 @@
 ..
    This file is part of base32-lib
    Copyright (C) 2019 CERN.
-   Copyright (C) 2019 Northwestern University,
-                      Galter Health Sciences Library & Learning Center.
+   Copyright (C) 2019 Northwestern University.
 
    base32-lib is free software; you can redistribute it and/or modify it
    under the terms of the MIT License; see LICENSE file for more details.
@@ -11,9 +10,6 @@
 =================
 base32-lib
 =================
-
-.. image:: https://img.shields.io/travis/inveniosoftware/base32-lib.svg
-        :target: https://travis-ci.org/inveniosoftware/base32-lib
 
 .. image:: https://img.shields.io/coveralls/inveniosoftware/base32-lib.svg
         :target: https://coveralls.io/r/inveniosoftware/base32-lib
@@ -67,6 +63,7 @@ Features
 - Randomness through cryptographically secure random number generator
 - Optional ISO-7064 checksum
 - Optional hyphenation
+- Supports uv
 
 
 Installation
