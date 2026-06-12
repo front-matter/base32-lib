@@ -2,6 +2,8 @@
 # SPDX-FileCopyrightText: 2019 Northwestern University.
 # SPDX-License-Identifier: MIT
 
+exclude .git-blame-ignore-revs
+exclude uv.lock
 include *.rst
 include *.toml
 include .coveragerc
