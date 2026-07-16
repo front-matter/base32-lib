@@ -7,5 +7,5 @@
 
 from .base32 import decode, encode, generate
 
-__version__ = "1.1.0"
+__version__ = "1.1.1"
 __all__ = ["decode", "encode", "generate", "__version__"]
